@@ -1,28 +1,29 @@
+# -*- coding: utf-8 -*-
+
+import telebot
+import os
 import psycopg2
 from config import host, user, password, db_name
 
-try:
+connection = psycopg2.connect(host=host,
+                              user=user,
+                              password=password,
+                              database=db_name)
+connection.autocommit = True
+cursor = connection.cursor()
 
-    connection = psycopg2.connect(host=host,
-                                  user=user,
-                                  password=password,
-                                  database=db_name)
-    connection.autocommit=True
-    cursor = connection.cursor()
-    cursor.execute(
-        """SELECT EXISTS (SELECT 1 FROM users WHERE user_id=12345);""")
+bot = telebot.TeleBot('2039868360:AAE9y-GNxzx3LeRyY6MOYGMokH2TDFwIN7A')
+CONTENT_TYPES = ["text", "audio", "document", "photo", "sticker", "video", "video_note", "voice", "location", "contact",
+                 "new_chat_members", "left_chat_member", "new_chat_title", "new_chat_photo", "delete_chat_photo",
+                 "group_chat_created", "supergroup_chat_created", "channel_chat_created", "migrate_to_chat_id",
+                 "migrate_from_chat_id", "pinned_message"]
+name_of_photo = []
+i = 0
 
 
-    if not cursor.fetchone()[0]:
-        cursor.execute("""INSERT INTO users VALUES (12345,)""")
+@bot.message_handler(content_types=CONTENT_TYPES)
+def get_text_messages(message):
+    global i
+    print(message)
 
-
-    print("ff")
-except Exception as e:
-    print(e)
-    print('Error while working with PostgresSQL', e)
-else:
-    if connection:
-        connection.close()
-        cursor.close()
-        print('PostgresSQL connection closed')
+bot.polling(none_stop=True)
